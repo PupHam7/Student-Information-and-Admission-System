@@ -14,12 +14,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // This is the critical line for 403 errors
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // Permitting the API documentation and UI paths explicitly
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**"
+                        ).permitAll()
+                        // Permitting your API endpoints
                         .requestMatchers("/api/**").permitAll()
+                        // Any other request must be authenticated
                         .anyRequest().authenticated()
                 );
         return http.build();
     }
 }
-
