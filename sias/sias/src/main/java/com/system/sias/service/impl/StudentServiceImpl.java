@@ -9,6 +9,7 @@ import com.system.sias.entity.Student;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,10 +21,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto createStudent(StudentDto studentDto) {
-
         Student student = StudentMapper.mapToStudent(studentDto);
-        Student savedStudent = studentRepository.save(student);
 
+        Student savedStudent = studentRepository.save(student);
         return StudentMapper.mapToStudentDto(savedStudent);
     }
 
@@ -32,7 +32,7 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Student with the given Id:"+ studentId + "does not exist."));
+                        new ResourceNotFoundException("Student with the given Id: "+ studentId + " does not exist."));
 
         return StudentMapper.mapToStudentDto(student);
     }
