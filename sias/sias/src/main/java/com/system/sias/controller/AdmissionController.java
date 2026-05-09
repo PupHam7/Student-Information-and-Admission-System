@@ -20,20 +20,26 @@ public class AdmissionController {
 
     private AdmissionService admissionService;
 
-    @PostMapping("/apply/{studentId}")
-    public ResponseEntity<ApiResponse<AdmissionDto>> applyForAdmission(@PathVariable Long studentId) {
-        AdmissionDto admissionDto = admissionService.applyForAdmission(studentId);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Admission application submitted", admissionDto), HttpStatus.CREATED);
+    @PostMapping("/submit")
+    public ResponseEntity<ApiResponse<AdmissionDto>> submitAdmission(@RequestBody AdmissionDto admissionDto) {
+        AdmissionDto savedDto = admissionService.applyForAdmission(admissionDto);
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Application Submitted Successfully", savedDto),
+                HttpStatus.CREATED
+        );
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<AdmissionDto>> updateStatus(@PathVariable Long id, @RequestParam String status) {
-        AdmissionDto updated = admissionService.updateAdmissionStatus(id, status);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Admission status updated to " + status, updated));
+    @PutMapping("/status/{id}")
+    public ResponseEntity<AdmissionDto> updateStatus(@PathVariable("id") Long admissionId,
+                                                     @RequestParam String status) {
+        AdmissionDto updated = admissionService.updateAdmissionStatus(admissionId, status);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping
     public ResponseEntity<List<AdmissionDto>> getAllAdmissions() {
         return ResponseEntity.ok(admissionService.getAllAdmissions());
     }
+
+
 }

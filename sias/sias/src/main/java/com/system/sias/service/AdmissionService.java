@@ -5,7 +5,7 @@ import com.system.sias.dto.AdmissionDto;
 import java.util.List;
 
 public interface AdmissionService {
-    AdmissionDto applyForAdmission(Long studentId);
+    AdmissionDto applyForAdmission(AdmissionDto admissionDto);
     AdmissionDto updateAdmissionStatus(Long admissionId, String status);
 
     List<AdmissionDto> getAllAdmissions();
