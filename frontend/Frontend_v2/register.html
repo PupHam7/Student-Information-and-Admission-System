@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ParSU SIAS – Admission Application</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="white-center-page">
+  <div class="content-center">
+    <img src="PSU_logo.png" class="seal" />
+    <h2 class="uni-name">Partido State University</h2>
+    <p class="uni-sub">Admission Application Form</p>
+
+    <form id="registrationForm" onsubmit="handleRegistration(event)">
+      <div class="field">
+        <label>First Name:</label>
+        <input type="text" id="regFirstName" placeholder="Enter First Name" required />
+      </div>
+      <div class="field">
+        <label>Last Name:</label>
+        <input type="text" id="regLastName" placeholder="Enter Last Name" required />
+      </div>
+      <div class="field">
+        <label>Email Address:</label>
+        <input type="email" id="regEmail" placeholder="Enter Email" required />
+      </div>
+      
+      <button type="submit" class="btn blue">Submit Application</button>
+      <button type="button" class="btn gray" onclick="window.location.href='index.html'">Cancel</button>
+    </form>
+    <div id="regMessage" style="margin-top: 15px; font-weight: bold;"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Assessment</title>
+<link rel="stylesheet" href="assessment.css">
+</head>
+
+<body>
+
+<!--header-->
+<div class="topbar">
+  <div class="logo-title">
+    <img src="logo.png">
+    <h2>Partido State University</h2>
+  </div>
+</div>
+
+<div class="yellow-bar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h3>Assessment</h3>
+  <div class="tabs"></div>
+</div>
+
+<!-- CONTENT -->
+<div id="assessment" class="tab-content">
+
+  <div class="container">
+
+    <!-- FILTERS -->
+    <div class="filters">
+
+      <!-- LEFT SIDE INFO -->
+      <div class="left-info">
+        <span>Name: <b id="First_name"></b></span>
+        <span>Course & Year: <b id="courseYear"></b></span>
+        <span>Dept: <b id="department"></b></span>
+        <span>Sex: <b id="sex"></b></span>
+        <span>Validated: <b id="validated"></b></span>
+      </div>
+
+      <!-- RIGHT SIDE BUTTON -->
+      <button id="actionBtn" class="enroll-btn" onclick="handleEnroll()">Enroll</button>
+
+    </div>
+
+    <p id="enrollMessage" class="enroll-message"></p>
+
+   <div class="subject-header">
+  <p class="subtitle">Enrolled Subjects:</p>
+  
+  <div class="period-box">
+    <label>Period:</label>
+    <select id="period">
+      <option>Loading...</option>
+    </select>
+  </div>
+</div>
+
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Subject</th>
+          <th>Description</th>
+          <th>Units</th>
+          <th>Schedule</th>
+          <th>Instructor</th>
+          <th>Section</th>
+        </tr>
+      </thead>
+
+      <tbody id="scheduleTable"></tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="3" style="text-align:right; font-weight:bold;">Total Units:</td>
+          <td style="font-weight:bold;"><span id="totalUnits">0</span></td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div> 
+
+</div>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="overlay hidden">
+  <div class="modal">
+    <p class="modal-text"><b>Are you sure you want to Enroll?</b><br>Click "Proceed" if yes.</p>
+
+    <div class="modal-buttons">
+      <button class="cancel-btn" onclick="goBack()">Cancel</button>
+      <button class="proceed-btn" onclick="confirmEnroll()">Proceed</button>
+    </div>
+  </div>
+</div>
+
+<script src="assessment.js"></script>
+
+</body>
+</html>
