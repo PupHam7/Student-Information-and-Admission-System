@@ -20,7 +20,7 @@ public class Student extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name= "student_number", unique = true)
     private String studentNumber;
 
     @Column(name = "first_name")
@@ -32,8 +32,15 @@ public class Student extends BaseEntity{
     @Column(name = "email_id", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
     @OneToOne(mappedBy = "student", cascade = CascadeType.ALL)
     @JsonIgnore
     private Admission admission;
 
+    private String sex;
+
 }
+
+

@@ -11,7 +11,9 @@ public class StudentMapper {
                 student.getStudentNumber(),
                 student.getFirstName(),
                 student.getLastName(),
-                student.getEmail()
+                student.getPassword(),
+                student.getEmail(),
+                student.getSex()
         );
     }
 
@@ -21,6 +23,7 @@ public class StudentMapper {
         student.setFirstName(studentDto.getFirstName());
         student.setLastName(studentDto.getLastName());
         student.setEmail(studentDto.getEmail());
+        student.setPassword(studentDto.getPassword());
         return student;
     }
 }

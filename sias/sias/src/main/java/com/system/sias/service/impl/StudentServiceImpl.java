@@ -23,9 +23,6 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto createStudent(StudentDto studentDto) {
         Student student = StudentMapper.mapToStudent(studentDto);
 
-        String studentNumber = LocalDate.now().getYear() + "" + (10000 + studentRepository.count()+1);
-        student.setStudentNumber(studentNumber);
-
         Student savedStudent = studentRepository.save(student);
         return StudentMapper.mapToStudentDto(savedStudent);
     }
@@ -35,7 +32,7 @@ public class StudentServiceImpl implements StudentService {
 
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Student with the given Id:"+ studentId + " does not exist."));
+                        new ResourceNotFoundException("Student with the given Id: "+ studentId + " does not exist."));
 
         return StudentMapper.mapToStudentDto(student);
     }
