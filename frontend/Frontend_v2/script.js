@@ -1,9 +1,4 @@
-(function checkAuth() {
-    const sessionUser = localStorage.getItem('studentId');
-    if (!sessionUser && !window.location.href.includes('login.html') && !window.location.href.includes('register.html')) {
-        window.location.href = 'login.html';
-    }
-})();
+
 
 /* ── Role select ── */
 function selectRole(role) {
@@ -147,29 +142,45 @@ async function loadPendingAdmissions() {
 
     try {
         const response = await fetch('http://localhost:8080/api/admissions');
-        const admissions = await response.json();
+        
+        // Add this check to see if the server is actually responding
+        if (!response.ok) throw new Error("Server returned an error");
 
-        tableBody.innerHTML = ""; // Clear loading message
+        const admissions = await response.json();
+        console.log("Data received from server:", admissions); // Check your browser console (F12)
+
+        tableBody.innerHTML = ""; 
+
+        if (admissions.length === 0) {
+            tableBody.innerHTML = "<tr><td colspan='5'>No applications found in the database.</td></tr>";
+            return;
+        }
 
         admissions.forEach(adm => {
+            // SAFE ACCESS: Use DTO fields directly, not .student
+            const fName = adm.firstName || "N/A"; 
+            const lName = adm.lastName || "";
+            const email = adm.email || "No Email";
+            const status = adm.status || "PENDING";
+
             const row = `
                 <tr>
                     <td>${adm.id}</td>
-                    <td>${adm.student.firstName} ${adm.student.lastName}</td>
-                    <td>${adm.student.email}</td>
-                    <td class="status-${adm.status.toLowerCase()}">${adm.status}</td>
+                    <td>${fName} ${lName}</td>
+                    <td>${email}</td>
+                    <td class="status-${status.toLowerCase()}">${status}</td>
                     <td>
-                        ${adm.status === 'PENDING' ? 
+                        ${status === 'PENDING' ? 
                             `<button class="approve-btn" onclick="updateStatus(${adm.id}, 'APPROVED')">Approve</button>
-                            <button class="reject-btn" onclick="updateStatus(${adm.id}, 'REJECTED')">Reject</button>` : 
-                            '<span style="color:gray italic">Processed</span>'}
+                             <button class="reject-btn" onclick="updateStatus(${adm.id}, 'REJECTED')">Reject</button>` : 
+                            '<span style="color:gray; font-style:italic">Processed</span>'}
                     </td>
                 </tr>`;
             tableBody.insertAdjacentHTML('beforeend', row);
         });
     } catch (error) {
-        console.error("Error fetching admissions:", error);
-        tableBody.innerHTML = "<tr><td colspan='5' style='color:red;'>Failed to load data. Is the backend running?</td></tr>";
+        console.error("Fetch Error:", error);
+        tableBody.innerHTML = `<tr><td colspan='5' style='color:red;'>Error: ${error.message}. Check console for details.</td></tr>`;
     }
 }
 
@@ -178,7 +189,7 @@ async function updateStatus(admissionId, status) {
     if (!confirm(`Are you sure you want to ${action} this student?`)) return;
 
     try {
-        const response = await fetch(`http://localhost:8080/api/admissions/${admissionId}/status?status=${status}`, {
+        const response = await fetch(`http://localhost:8080/api/admissions/status/${admissionId}?status=${status}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }
         });

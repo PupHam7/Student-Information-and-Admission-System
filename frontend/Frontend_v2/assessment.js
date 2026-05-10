@@ -5,7 +5,15 @@ if (!localStorage.getItem('studentId')) {
 
 (function checkAuth() {
     const sessionUser = localStorage.getItem('studentId');
-    if (!sessionUser && !window.location.href.includes('login.html') && !window.location.href.includes('register.html')) {
+    const path = window.location.href;
+    
+    // Add !path.endsWith('index.html') or .includes('index.html') to the list of allowed pages
+    if (!sessionUser && 
+        !path.includes('login.html') && 
+        !path.includes('register.html') && 
+        !path.includes('index.html') && // <--- ADD THIS
+        path !== window.location.origin + '/' // <--- AND THIS (for the base URL)
+    ) {
         window.location.href = 'login.html';
     }
 })();
@@ -53,9 +61,10 @@ function loadAdmission() {
       setText("First_name", `${data.student.lastName}, ${data.student.firstName}`);
       setText("course", data.course);          
       setText("department", data.department);
-      setText("courseYear", data.yearLevel);   
+      setText("courseYear", `${data.course} - ${data.yearLevel}`);
+      setText("sex", data.sex);
       
-      // Note: Ensure the 'validated' label reflects the official status
+
       setText("validated", "Yes");
 
       // 2. Map the Period (Semester and Academic Year)

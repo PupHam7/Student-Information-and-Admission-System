@@ -253,3 +253,17 @@ form {
 .sec.active {
   display: block;
 }
+
+.back-link {
+  display: block;
+  margin-bottom: 15px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: #003366; /* Match the university blue */
+  text-decoration: underline;
+}
