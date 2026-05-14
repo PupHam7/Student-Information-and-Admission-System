@@ -16,6 +16,24 @@ body {
   font-size: 14px;
 }
 
+.password-container {
+  position: relative;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+#togglePassword {
+  position: absolute;
+  right: 10px;
+  top: 70%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+}
+
 .white-center-page {
   min-height: 100vh;
   background: #ffffff;
@@ -266,4 +284,17 @@ form {
 .back-link:hover {
   color: #003366; /* Match the university blue */
   text-decoration: underline;
+}
+
+.popup-overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }

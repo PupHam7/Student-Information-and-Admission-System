@@ -242,12 +242,23 @@
       color: #1a1a1a;
       box-shadow: 0 3px 12px rgba(255,204,0,.35);
     }
-    .btn-gold:hover { background: #e6b800; box-shadow: 0 4px 16px rgba(255,204,0,.5); }
-    .btn-ghost {
-      background: transparent;
-      color: var(--blue);
-      border: 1.5px solid var(--border);
-    }
+    .yellow-bar {
+      background: #f4c400;
+       padding: 10px 20px;
+
+      position: fixed;
+      top: 80px;
+      left: 0;
+      width: 100%;
+      z-index: 1999;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      height: 40px;   /* 🔥 FIXED HEIGHT */
+      overflow: hidden;
+  }
     .btn-ghost:hover { background: var(--cream); }
     .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
@@ -458,6 +469,11 @@
     <div class="header-nav-hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
     </div>
+    <div class="yellow-bar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h3>Assessment</h3>
+  <div class="tabs"></div>
+</div>
   </div>
 </header>
 
@@ -840,6 +856,14 @@
       showEl('step2Warn');
     }
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedId = localStorage.getItem('studentId');
+    const savedName = localStorage.getItem('studentName');
+
+    if (savedId) document.getElementById('studentId').value = savedId;
+    if (savedName) document.getElementById('studentName').value = savedName;
+});
 
   /* ── Render confirmed ─────────────────────────────────────────── */
   function renderConfirmed(totalUnits) {

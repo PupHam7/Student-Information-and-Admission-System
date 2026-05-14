@@ -134,6 +134,11 @@ select {
   border-radius: 5px;
 }
 
+table td:nth-child(4),
+table th:nth-child(4) {
+  text-align: center;
+}
+
 /* =========================
    MESSAGE
 ========================= */
@@ -346,4 +351,5 @@ th {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
+
 

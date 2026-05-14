@@ -1,4 +1,8 @@
+/* ================================================================
+   script.js  —  shared across login, dashboard, and admin pages
+   ================================================================ */
 
+const BASE_URL = 'http://localhost:8080';
 
 /* ── Role select ── */
 function selectRole(role) {
@@ -7,45 +11,64 @@ function selectRole(role) {
 }
 
 /* ── Login ── */
-async function handleLogin(e) {
-  e.preventDefault();
-  const userId = document.getElementById('userId').value.trim();
-  const password = document.getElementById('password').value.trim();
+async function handleLogin(event) {
+  event.preventDefault();
+  const studentNumber = document.getElementById('userId').value.trim();
+  const password      = document.getElementById('password').value;
 
   try {
-    const response = await fetch('http://localhost:8080/api/auth/login', {
-      method: 'POST',
+    const response = await fetch(`${BASE_URL}/api/auth/login`, {
+      method : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, password })
+      body   : JSON.stringify({ studentNumber, password })
     });
 
-    const result = await response.json();
-
-    if (result.success) {
-      // SUCCESS: Save the database ID (pk) and redirect
-      localStorage.setItem('studentId', result.data.id); 
-      localStorage.setItem('userId', result.data.studentNumber);
-      localStorage.setItem('firstName', result.data.firstName);
+    if (response.ok) {
+      const student = await response.json();
+      localStorage.setItem('studentId',   student.studentNumber);
+      localStorage.setItem('studentName', `${student.firstName} ${student.lastName}`);
+      // NOTE: isConfirmed is NOT a field on official_student — removed from here.
       window.location.href = 'dashboard.html';
     } else {
-      alert("Error: " + result.message);
+      const msg = await response.text();
+      showError(msg || 'Invalid credentials. Please try again.');
     }
-  } catch (error) {
-    console.error("Connection failed:", error);
-    alert("Backend server is not responding.");
+  } catch (err) {
+    showError('Server connection failed. Is the backend running?');
   }
 }
 
-/* ── Dashboard ── */
+/* ── Password visibility toggle (login page only) ──
+   MUST be inside DOMContentLoaded so we don't crash on pages
+   that don't have #password / #togglePassword (e.g. admin-dashboard). */
+document.addEventListener('DOMContentLoaded', function () {
+  const passwordInput = document.getElementById('password');
+  const toggleBtn     = document.getElementById('togglePassword');
+
+  if (passwordInput && toggleBtn) {
+    toggleBtn.addEventListener('click', function () {
+      if (passwordInput.type === 'password') {
+        passwordInput.type    = 'text';
+        toggleBtn.textContent = '👁️‍🗨️';
+      } else {
+        passwordInput.type    = 'password';
+        toggleBtn.textContent = '👁';
+      }
+    });
+  }
+});
+
+/* ── Dashboard helpers ── */
 function show(name, btn) {
-  document.querySelectorAll('.sec').forEach(function(s) { s.classList.remove('active'); });
-  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById('sec-' + name).classList.add('active');
   if (btn) btn.classList.add('active');
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('hidden');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.toggle('hidden');
 }
 
 function logout() {
@@ -53,158 +76,169 @@ function logout() {
   window.location.href = 'index.html';
 }
 
-/* ── On page load ── */
+/* ── Dashboard — populate profile on load ── */
 document.addEventListener('DOMContentLoaded', function () {
-  const firstName = localStorage.getItem('firstName');
-  const role = localStorage.getItem('selectedRole') || 'Student';
-  const studentNumber = localStorage.getItem('userId'); // The Student Number used for login
+  const role          = localStorage.getItem('selectedRole') || 'Student';
+  const studentNumber = localStorage.getItem('studentId');
+  const studentName   = localStorage.getItem('studentName');
 
-const welcomeText = document.getElementById('welcomeName');
+  const welcomeText = document.getElementById('welcomeName');
   if (welcomeText) {
-      welcomeText.textContent = firstName ? firstName : "Student";
+    welcomeText.textContent = studentName ? studentName.split(' ')[0] : 'Student';
   }
 
-  // Update Badge
-  const badge = document.getElementById('roleBadge');
-  if (badge) badge.textContent = role;
-
-  // Update Profile Info in Dashboard
   if (document.getElementById('profileId')) {
-    if (!studentNumber) { 
-        window.location.href = 'index.html'; 
-        return; 
+    if (!studentNumber) {
+      window.location.href = 'index.html';
+      return;
     }
-    
-    // Display the Student Number and Name
-    document.getElementById('profileId').textContent = studentNumber;
+    document.getElementById('profileId').textContent  = studentNumber;
     document.getElementById('profileRole').textContent = role;
-    
-    // Display initials in the avatar
+
     const avatar = document.getElementById('avatar');
-    if (avatar && firstName) {
-        avatar.textContent = firstName.charAt(0).toUpperCase();
+    if (avatar && studentName) {
+      avatar.textContent = studentName.charAt(0).toUpperCase();
     }
   }
 });
 
-async function handleRegistration(e) {
-  e.preventDefault();
-  const messageDiv = document.getElementById('regMessage');
-  messageDiv.textContent = "Processing...";
-  messageDiv.style.color = "blue";
+/* ── Admin — load pending admissions on page load ──
+   Guarded: only runs if the admissions table body exists on this page. */
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.getElementById('admissionTableBody')) {
+    loadPendingAdmissions();
+  }
+});
 
-  const studentData = {
-    firstName: document.getElementById('regFirstName').value.trim(),
-    lastName: document.getElementById('regLastName').value.trim(),
-    email: document.getElementById('regEmail').value.trim()
-  };
+/* ── Admin — fetch & render applicants ── */
+async function loadPendingAdmissions() {
+  const tableBody = document.getElementById('admissionTableBody');
+  if (!tableBody) return;
+
+  tableBody.innerHTML = "<tr><td colspan='5'>Loading applications…</td></tr>";
 
   try {
-    // Step A: Create the Student
-    const studentResponse = await fetch('http://localhost:8080/api/students', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(studentData)
+    const response = await fetch(`${BASE_URL}/api/admissions`);
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+    const admissions = await response.json();
+    console.log('Admissions data:', admissions);
+
+    tableBody.innerHTML = '';
+
+    if (!admissions.length) {
+      tableBody.innerHTML =
+        "<tr><td colspan='5'>No applications found in the database.</td></tr>";
+      return;
+    }
+
+    admissions.forEach(adm => {
+      // The backend returns Applicant objects; name/email live in personalData
+      const firstName   = adm.personalData?.firstName   || '';
+      const lastName    = adm.personalData?.lastName    || '';
+      const email       = adm.personalData?.emailAddress || 'N/A';
+      const isApproved  = adm.admissionData?.isConfirmed === true;
+      const statusText  = isApproved ? 'APPROVED' : 'PENDING';
+      const statusClass = isApproved ? 'status-approved' : 'status-pending';
+
+      const actionContent = isApproved
+        ? `<span class="processed-label">Processed</span>`
+        : `<button class="approve-btn" onclick="updateStatus(${adm.id}, 'APPROVED')">Approve</button>
+           <button class="reject-btn"  onclick="updateStatus(${adm.id}, 'REJECTED')">Reject</button>`;
+
+      tableBody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${adm.id ?? 'N/A'}</td>
+          <td>${firstName} ${lastName}</td>
+          <td>${email}</td>
+          <td class="${statusClass}">${statusText}</td>
+          <td>${actionContent}</td>
+        </tr>`);
     });
 
-    const studentResult = await studentResponse.json();
-
-    if (studentResponse.ok) {
-      const studentId = studentResult.id; // Get the generated ID from backend
-
-      // Step B: Create the Admission Application
-      const admissionResponse = await fetch(`http://localhost:8080/api/admissions/apply/${studentId}`, {
-        method: 'POST'
-      });
-
-      if (admissionResponse.ok) {
-        messageDiv.style.color = "green";
-        messageDiv.textContent = "Success! Your application is PENDING. Please check your email for updates.";
-        // Optional: Redirect to home after 3 seconds
-        setTimeout(() => { window.location.href = 'index.html'; }, 4000);
-      } else {
-        throw new Error("Failed to submit admission application.");
-      }
-    } else {
-      messageDiv.style.color = "red";
-      messageDiv.textContent = "Error: " + (studentResult.message || "Email might already be registered.");
-    }
   } catch (error) {
-    messageDiv.style.color = "red";
-    messageDiv.textContent = "Connection Error: Is the backend running?";
-    console.error(error);
+    console.error('loadPendingAdmissions error:', error);
+    tableBody.innerHTML =
+      `<tr><td colspan='5' style='color:red;'>Error: ${error.message}</td></tr>`;
   }
 }
 
-async function loadPendingAdmissions() {
-    const tableBody = document.getElementById('admissionTableBody');
-    tableBody.innerHTML = "<tr><td colspan='5'>Loading applications...</td></tr>";
-
-    try {
-        const response = await fetch('http://localhost:8080/api/admissions');
-        
-        // Add this check to see if the server is actually responding
-        if (!response.ok) throw new Error("Server returned an error");
-
-        const admissions = await response.json();
-        console.log("Data received from server:", admissions); // Check your browser console (F12)
-
-        tableBody.innerHTML = ""; 
-
-        if (admissions.length === 0) {
-            tableBody.innerHTML = "<tr><td colspan='5'>No applications found in the database.</td></tr>";
-            return;
-        }
-
-        admissions.forEach(adm => {
-            // SAFE ACCESS: Use DTO fields directly, not .student
-            const fName = adm.firstName || "N/A"; 
-            const lName = adm.lastName || "";
-            const email = adm.email || "No Email";
-            const status = adm.status || "PENDING";
-
-            const row = `
-                <tr>
-                    <td>${adm.id}</td>
-                    <td>${fName} ${lName}</td>
-                    <td>${email}</td>
-                    <td class="status-${status.toLowerCase()}">${status}</td>
-                    <td>
-                        ${status === 'PENDING' ? 
-                            `<button class="approve-btn" onclick="updateStatus(${adm.id}, 'APPROVED')">Approve</button>
-                             <button class="reject-btn" onclick="updateStatus(${adm.id}, 'REJECTED')">Reject</button>` : 
-                            '<span style="color:gray; font-style:italic">Processed</span>'}
-                    </td>
-                </tr>`;
-            tableBody.insertAdjacentHTML('beforeend', row);
-        });
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        tableBody.innerHTML = `<tr><td colspan='5' style='color:red;'>Error: ${error.message}. Check console for details.</td></tr>`;
-    }
-}
-
+/* ── Admin — approve or reject an applicant ── */
 async function updateStatus(admissionId, status) {
-    const action = status === 'APPROVED' ? "approve" : "reject";
-    if (!confirm(`Are you sure you want to ${action} this student?`)) return;
+  const action = status === 'APPROVED' ? 'approve' : 'reject';
+  if (!confirm(`Are you sure you want to ${action} this student?`)) return;
 
-    try {
-        const response = await fetch(`http://localhost:8080/api/admissions/status/${admissionId}?status=${status}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
-        });
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/registration/${admissionId}/validate`,
+      {
+        method : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ status })   // FIX: was missing — backend needs the decision
+      }
+    );
 
-        if (response.ok) {
-            alert(`Student ${status.toLowerCase()} successfully!`);
-            loadPendingAdmissions(); // Refresh the table
-        } else {
-            const err = await response.json();
-            alert("Error: " + err.message);
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Connection failed.");
+    if (response.ok) {
+      showPopup(
+        'Application processed successfully. Student can now claim credentials in the portal.',
+        'success'
+      );
+      loadPendingAdmissions();
+    } else {
+      const err = await response.json().catch(() => ({}));
+      showPopup('Error: ' + (err.message || 'Failed to update status.'), 'error');
     }
+  } catch (error) {
+    console.error('updateStatus error:', error);
+    showPopup('Server connection failed. Please check if the backend is running.', 'error');
+  }
 }
 
-document.addEventListener('DOMContentLoaded', loadPendingAdmissions);
+/* ================================================================
+   Popup / Error helpers
+   Used by login.html (showError) and admin-dashboard.html (showPopup).
+   Both pages must have: #darkOverlay, #errorPopup, #errorMessage, #popupTitle
+   ================================================================ */
+
+function showError(msg) {
+  const overlay = document.getElementById('darkOverlay');
+  const popup   = document.getElementById('errorPopup');
+  const msgEl   = document.getElementById('errorMessage');
+  const title   = document.getElementById('popupTitle');
+
+  if (!popup || !msgEl) { alert(msg); return; }   // safe fallback
+
+  msgEl.innerText = msg;
+  if (title) { title.innerHTML = '⚠ Error'; title.style.color = 'red'; }
+  if (overlay) overlay.style.display = 'block';
+  popup.style.display = 'block';
+}
+
+function showPopup(message, type = 'error') {
+  const overlay = document.getElementById('darkOverlay');
+  const popup   = document.getElementById('errorPopup');
+  const msgEl   = document.getElementById('errorMessage');
+  const title   = document.getElementById('popupTitle');
+
+  if (!popup || !msgEl) { alert(message); return; }  // safe fallback
+
+  msgEl.innerText = message;
+  if (overlay) overlay.style.display = 'block';
+  popup.style.display = 'block';
+
+  if (title) {
+    if      (type === 'success') { title.innerHTML = '✅ Success';        title.style.color = 'green';   }
+    else if (type === 'confirm') { title.innerHTML = '❓ Confirm Action'; title.style.color = '#ff9800'; }
+    else                         { title.innerHTML = '⚠ Error';           title.style.color = 'red';     }
+  }
+}
+
+function closePopup() {
+  const overlay = document.getElementById('darkOverlay');
+  const popup   = document.getElementById('errorPopup');
+  if (overlay) overlay.style.display = 'none';
+  if (popup)   popup.style.display   = 'none';
+}
+
+// Alias kept for any older onclick="closeError()" in HTML
+function closeError() { closePopup(); }

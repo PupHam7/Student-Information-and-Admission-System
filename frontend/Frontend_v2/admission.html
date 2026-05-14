@@ -673,6 +673,18 @@
     </div>
   </div>
 
+    <!-- ERROR POPUP -->
+  <div class="popup-overlay" id="popupError" style="display: none;">
+    <div class="popup-box" style="border-top: 6px solid #d9534f;">
+      <div class="popup-icon" style="color: #d9534f;">❌</div>
+      <h3 style="color: #d9534f; font-size: 18px;">Invalid Input</h3>
+      <p id="popupErrorMsg" style="font-size: 14px; margin-bottom: 15px;">
+        Please check your input and try again.
+      </p>
+      <button class="popup-btn" onclick="closePopup('popupError')">OK</button>
+    </div>
+  </div>
+
 <script src="admission.js"></script>
 </body>
 </html>

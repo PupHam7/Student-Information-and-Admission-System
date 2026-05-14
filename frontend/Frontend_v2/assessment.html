@@ -27,37 +27,46 @@
 
   <div class="container">
 
+    <!-- Loading indicator (hidden by default, shown while fetching) -->
+    <div id="loadingIndicator" style="display:none; text-align:center; padding:20px; color:#888;">
+      Loading your information…
+    </div>
+
     <!-- FILTERS -->
     <div class="filters">
 
       <!-- LEFT SIDE INFO -->
       <div class="left-info">
-        <span>Name: <b id="First_name"></b></span>
-        <span>Course & Year: <b id="courseYear"></b></span>
-        <span>Dept: <b id="department"></b></span>
-        <span>Sex: <b id="sex"></b></span>
-        <span>Validated: <b id="validated"></b></span>
+        <span>Name: <b id="First_name">—</b></span>
+        <span>Course &amp; Year: <b id="courseYear">—</b></span>
+        <span>Dept: <b id="department">—</b></span>
+        <span>Sex: <b id="sex">—</b></span>
+        <span>Validated: <b id="validated">—</b></span>
       </div>
 
-      <!-- RIGHT SIDE BUTTON -->
-      <button id="actionBtn" class="enroll-btn" onclick="handleEnroll()">Enroll</button>
+      <!--
+        actionBtn: NO hardcoded onclick here.
+        assessment.js sets both the label and the handler dynamically:
+          - "Enroll"    → navigates to Scheduling.html
+          - "View COE"  → navigates to coe.html
+      -->
+      <button id="actionBtn" class="enroll-btn">Enroll</button>
 
     </div>
 
     <p id="enrollMessage" class="enroll-message"></p>
 
-   <div class="subject-header">
-  <p class="subtitle">Enrolled Subjects:</p>
-  
-  <div class="period-box">
-    <label>Period:</label>
-    <select id="period">
-      <option>Loading...</option>
-    </select>
-  </div>
-</div>
+    <div class="subject-header">
+      <p class="subtitle">Enrolled Subjects:</p>
 
-    
+      <div class="period-box">
+        <label>Period:</label>
+        <select id="period">
+          <option>Loading…</option>
+        </select>
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -71,7 +80,13 @@
         </tr>
       </thead>
 
-      <tbody id="scheduleTable"></tbody>
+      <tbody id="scheduleTable">
+        <tr>
+          <td colspan="7" style="text-align:center; color:#888;">
+            Loading schedule…
+          </td>
+        </tr>
+      </tbody>
 
       <tfoot>
         <tr>
@@ -82,17 +97,17 @@
       </tfoot>
     </table>
 
-  </div> 
+  </div>
 
 </div>
 
-<!-- MODAL -->
+<!-- MODAL — shown when "Enroll" is clicked (confirmation) -->
 <div id="modalOverlay" class="overlay hidden">
   <div class="modal">
     <p class="modal-text"><b>Are you sure you want to Enroll?</b><br>Click "Proceed" if yes.</p>
 
     <div class="modal-buttons">
-      <button class="cancel-btn" onclick="goBack()">Cancel</button>
+      <button class="cancel-btn"  onclick="goBack()">Cancel</button>
       <button class="proceed-btn" onclick="confirmEnroll()">Proceed</button>
     </div>
   </div>

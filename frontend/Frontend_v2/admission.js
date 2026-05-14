@@ -1213,7 +1213,7 @@ async function submitApplication() {
     sex: document.querySelector('input[name="sex"]:checked')?.value,
 
     mobileNumber: document.getElementById("pCellNo").value,
-    email: document.getElementById("pEmail").value,
+    emailAddress: document.getElementById("pEmail").value,
     civilStatus: document.getElementById("pCivilStatus").value,
     birthPlace: document.getElementById("pBirthPlace").value,
     height: document.getElementById("pHeight").value,
@@ -1261,7 +1261,7 @@ async function submitApplication() {
     guardianRelationship: document.getElementById("gRelationship").value,
 
     emergencyContactName: document.getElementById("ecName").value,
-    emergencyContact: document.getElementById("ecMobile").value,
+    emergencyContactNo: document.getElementById("ecMobile").value,
 
     // ADMISSION DATA
     admissionLevel: document.getElementById("admFor").value,
@@ -1269,21 +1269,21 @@ async function submitApplication() {
 
     lrn: document.getElementById("iLRN").value,
 
-    program: document.getElementById("c1").value,
+    choice1: document.getElementById("c1").value,
     choice2: document.getElementById("c2").value,
     choice3: document.getElementById("c3").value,
 
-    lastSchoolAttended: document.getElementById("tSchoolName").value,
+    lastSchoolName: document.getElementById("tSchoolName").value,
     lastSchoolAddress: document.getElementById("tSchoolAddr").value,
-    department: document.getElementById("iCampus").value,
+    campus: document.getElementById("iCampus").value,
 
     lastYearAttended: document.getElementById("tLastYear").value,
     lastYearLevel: document.getElementById("tLastLevel").value,
     gwa: document.getElementById("tGWA").value,
     programOrStrand: document.getElementById("tProgram").value,
-    yearLevel: document.getElementById("iYearLevel").value,
+    appliedYearLevel: document.getElementById("iYearLevel").value,
 
-    isConfirmed: true
+    isConfirmed: false
   };
 
   try {

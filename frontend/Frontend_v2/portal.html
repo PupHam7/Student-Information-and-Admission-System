@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Portal - PSU Admission</title>
+    <link rel="stylesheet" href="portal.css">
+    <script
+        src="https://www.tuqlas.com/chatbot.js"
+        data-key="tq_live_525e44ceea59db463fa09d871401b621194424f8"
+        data-api="https://www.tuqlas.com"
+        defer>
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+ 
+<body>
+ 
+    <div class="status-portal-container">
+        <div class="status-portal-card">
+ 
+            <a href="index.html" class="portal-back-btn">
+                <i data-lucide="arrow-left"></i>
+            </a>
+ 
+            <div class="portal-header">
+                <h1>STATUS PORTAL</h1>
+                <p>Admission &amp; Enrollment Tracking</p>
+            </div>
+ 
+            <div class="portal-body">
+ 
+                <!-- LOGIN SECTION -->
+                <div id="loginSection">
+ 
+                    <div class="input-group">
+                        <label>Application Control Number</label>
+                        <div class="input-wrap">
+                            <i data-lucide="search" class="input-icon"></i>
+                            <input type="text" id="controlNumber" placeholder="Enter Control Number">
+                        </div>
+                    </div>
+ 
+                    <div class="input-group">
+                        <label>Last Name</label>
+                        <div class="input-wrap no-icon">
+                            <input type="text" id="lastName" placeholder="E.G. DELA CRUZ" class="caps">
+                        </div>
+                    </div>
+ 
+                    <button id="enterPortalBtn" class="portal-submit-btn" disabled>
+                        Check Status
+                    </button>
+ 
+                    <!-- Error message injected here by portal.js -->
+ 
+                </div>
+ 
+                <!-- STATUS SECTION -->
+                <div id="statusSection" style="display:none;">
+ 
+                    <!-- APPLICANT INFO -->
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i data-lucide="user"></i>
+                            <h4>Applicant Information</h4>
+                        </div>
+                        <div class="card-content">
+                            <p class="highlight-text">
+                                <strong>Name:</strong>
+                                <span id="displayName"></span>
+                            </p>
+                            <br>
+                            <p class="highlight-text">
+                                <strong>Control Number:</strong>
+                                <span id="displayControlNo"></span>
+                            </p>
+                            <!-- Approval badge injected here by portal.js -->
+                        </div>
+                    </div>
+ 
+                    <!-- EXAM SCHEDULE -->
+                    <div class="status-card">
+                        <div class="card-header">
+                            <i data-lucide="calendar"></i>
+                            <h4>Entrance Exam Schedule</h4>
+                        </div>
+                        <div class="card-content">
+                            <p class="highlight-text">
+                                Please check your schedule after 10 days.
+                            </p>
+                            <span class="meta-label">
+                                Status: Document Verification in Progress
+                            </span>
+                        </div>
+                    </div>
+ 
+                    <!-- EXAM RESULT -->
+                    <div class="status-card result-cert">
+                        <div class="card-header">
+                            <i data-lucide="award"></i>
+                            <h4>Entrance Exam Result</h4>
+                        </div>
+                        <div class="cert-body">
+                            <div class="choice-row">
+                                <i data-lucide="check-circle-2"></i>
+                                <span id="course1Choice">No Result Yet</span>
+                            </div>
+                            <button class="download-btn">
+                                <i data-lucide="file-text"></i>
+                                Download Official Certificate
+                            </button>
+                        </div>
+                    </div>
+ 
+                    <!-- ENROLLMENT CREDENTIALS -->
+                    <div class="status-card enrollment-card">
+                        <div class="card-header">
+                            <i data-lucide="user-plus"></i>
+                            <h4>Enrollment Credentials</h4>
+                        </div>
+                        <div class="card-content">
+ 
+                            <div id="preGenerate">
+                                <!--
+                                  FIX: Added id="enrollPromptMsg" so portal.js can update the
+                                  message text based on approval status (approved vs. pending).
+                                -->
+                                <p id="enrollPromptMsg" class="enroll-prompt">
+                                    Would you like to pursue your enrollment at PSU?
+                                </p>
+ 
+                                <!--
+                                  FIX: Button starts disabled — portal.js enables it only
+                                  when isConfirmed === true. Prevents confusion when pending.
+                                -->
+                                <button id="generateCredsBtn" class="action-btn" disabled
+                                        style="opacity:0.45;"
+                                        title="Admission must be approved first.">
+                                    Generate Student ID &amp; Password
+                                </button>
+                            </div>
+ 
+                            <div id="credDisplay" style="display:none;" class="cred-output"></div>
+ 
+                        </div>
+                    </div>
+ 
+                    <button onclick="window.location.reload()" class="back-link">
+                        ← Search Another Account
+                    </button>
+ 
+                </div>
+ 
+            </div>
+        </div>
+    </div>
+ 
+    <script src="portal.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+ 
+</body>
+</html>
