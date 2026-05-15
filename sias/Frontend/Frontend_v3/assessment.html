@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assessment – ParSU SIAS</title>
+  <link rel="stylesheet" href="assessment.css">
+  <style>
+    /* ── Sliding drawer sidebar ── */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 3000;
+    }
+    .drawer-overlay.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 280px;
+      height: 100%;
+      background: #fff;
+      z-index: 3001;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+      transition: left 0.28s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { left: 0; }
+
+    .drawer-profile {
+      background: linear-gradient(to bottom, #5a9fd4, #1e4a9a);
+      padding: 32px 20px 24px;
+      text-align: center;
+    }
+    .drawer-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #fff; color: #1e4a9a;
+      font-size: 22px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px;
+      border: 3px solid #fff;
+    }
+    .drawer-name  { color: #fff;     font-weight: 700; font-size: 14px; }
+    .drawer-role  { color: #fde97a;  font-weight: 600; font-size: 13px; margin-top: 4px; }
+
+    .drawer nav { display: flex; flex-direction: column; flex: 1; padding: 8px 0; }
+
+    .drawer-btn {
+      display: block; width: 100%;
+      padding: 16px 24px;
+      background: transparent; border: none;
+      border-left: 3px solid transparent;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      font-size: 14px; font-weight: 600;
+      color: #2a60c4; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .drawer-btn:hover, .drawer-btn.active {
+      background: #eef3fb; border-left-color: #f1b800;
+    }
+    .drawer-btn.logout { color: #c0392b; margin-top: auto; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── DRAWER OVERLAY ── -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeMenu()"></div>
+
+  <!-- ── DRAWER SIDEBAR ── -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-profile">
+      <div class="drawer-avatar" id="drawerAvatar">?</div>
+      <div class="drawer-name" id="drawerName">—</div>
+      <div class="drawer-role">Student</div>
+    </div>
+    <nav>
+      <button class="drawer-btn"        onclick="go('dashboard.html')">🏠 Dashboard</button>
+      <button class="drawer-btn active" onclick="go('assessment.html')">📋 Assessment</button>
+      <button class="drawer-btn"        onclick="go('Scheduling.html')">📅 My Schedule</button>
+      <button class="drawer-btn"        onclick="go('coe.html')">📄 View COE</button>
+      <button class="drawer-btn logout" onclick="logout()">⎋ Log Out</button>
+    </nav>
+  </aside>
+
+  <!-- ── TOPBAR ── -->
+  <div class="topbar">
+    <div class="logo-title">
+      <img src="logo.png" alt="PSU Logo">
+      <h2>Partido State University</h2>
+    </div>
+  </div>
+
+  <!-- ── YELLOW BAR ── -->
+  <div class="yellow-bar">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <h3>Assessment</h3>
+    <div class="tabs"></div>
+  </div>
+
+  <!-- ── CONTENT ── -->
+  <div id="assessment" class="tab-content">
+    <div class="container">
+
+      <div id="loadingIndicator" style="display:none; text-align:center; padding:20px; color:#888;">
+        Loading your information…
+      </div>
+
+      <div class="filters">
+        <div class="left-info">
+          <span>Name: <b id="First_name">—</b></span>
+          <span>Course &amp; Year: <b id="courseYear">—</b></span>
+          <span>Dept: <b id="department">—</b></span>
+          <span>Sex: <b id="sex">—</b></span>
+          <span>Validated: <b id="validated">—</b></span>
+        </div>
+        <button id="actionBtn" class="enroll-btn">Enroll</button>
+      </div>
+
+      <p id="enrollMessage" class="enroll-message"></p>
+
+      <div class="subject-header">
+        <p class="subtitle">Enrolled Subjects:</p>
+        <div class="period-box">
+          <label>Period:</label>
+          <select id="period"><option>Loading…</option></select>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Subject</th>
+            <th>Description</th>
+            <th>Units</th>
+            <th>Schedule</th>
+            <th>Instructor</th>
+            <th>Section</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleTable">
+          <tr><td colspan="7" style="text-align:center; color:#888;">Loading schedule…</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="text-align:right; font-weight:bold;">Total Units:</td>
+            <td style="font-weight:bold;"><span id="totalUnits">0</span></td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- ── ENROLL MODAL ── -->
+  <div id="modalOverlay" class="overlay hidden">
+    <div class="modal">
+      <p class="modal-text"><b>Are you sure you want to Enroll?</b><br>Click "Proceed" if yes.</p>
+      <div class="modal-buttons">
+        <button class="cancel-btn"  onclick="goBack()">Cancel</button>
+        <button class="proceed-btn" onclick="confirmEnroll()">Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assessment.js"></script>
+  <script>
+    /* ── Drawer helpers ── */
+    function toggleMenu() {
+      document.getElementById('drawer').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+    function closeMenu() {
+      document.getElementById('drawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+    }
+    function go(url) { window.location.href = url; }
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    /* ── Populate drawer profile from localStorage ── */
+    (function() {
+      const name = localStorage.getItem('studentName') || '';
+      const id   = localStorage.getItem('studentId')   || '—';
+      const avatarEl = document.getElementById('drawerAvatar');
+      const nameEl   = document.getElementById('drawerName');
+      if (nameEl)   nameEl.textContent   = name || id;
+      if (avatarEl) avatarEl.textContent = name ? name.charAt(0).toUpperCase() : '?';
+    })();
+  </script>
+
+</body>
+</html>

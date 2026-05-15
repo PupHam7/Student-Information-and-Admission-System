@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>COE – Partido State University</title>
+  <link rel="stylesheet" href="coe.css">
+  <style>
+    /* ── Sliding drawer sidebar ── */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 3000;
+    }
+    .drawer-overlay.open { display: block; }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 280px;
+      height: 100%;
+      background: #fff;
+      z-index: 3001;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+      transition: left 0.28s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { left: 0; }
+
+    .drawer-profile {
+      background: linear-gradient(to bottom, #5a9fd4, #1e4a9a);
+      padding: 32px 20px 24px;
+      text-align: center;
+    }
+    .drawer-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #fff; color: #1e4a9a;
+      font-size: 22px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 10px;
+      border: 3px solid #fff;
+    }
+    .drawer-name  { color: #fff;     font-weight: 700; font-size: 14px; }
+    .drawer-role  { color: #fde97a;  font-weight: 600; font-size: 13px; margin-top: 4px; }
+
+    .drawer nav { display: flex; flex-direction: column; flex: 1; padding: 8px 0; }
+
+    .drawer-btn {
+      display: block; width: 100%;
+      padding: 16px 24px;
+      background: transparent; border: none;
+      border-left: 3px solid transparent;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      font-size: 14px; font-weight: 600;
+      color: #2a60c4; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .drawer-btn:hover, .drawer-btn.active {
+      background: #eef3fb; border-left-color: #f1b800;
+    }
+    .drawer-btn.logout { color: #c0392b; margin-top: auto; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── DRAWER OVERLAY ── -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeMenu()"></div>
+
+  <!-- ── DRAWER SIDEBAR ── -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-profile">
+      <div class="drawer-avatar" id="drawerAvatar">?</div>
+      <div class="drawer-name"   id="drawerName">—</div>
+      <div class="drawer-role">Student</div>
+    </div>
+    <nav>
+      <button class="drawer-btn"        onclick="go('dashboard.html')">🏠 Dashboard</button>
+      <button class="drawer-btn"        onclick="go('assessment.html')">📋 Assessment</button>
+      <button class="drawer-btn"        onclick="go('Scheduling.html')">📅 My Schedule</button>
+      <button class="drawer-btn active" onclick="go('coe.html')">📄 View COE</button>
+      <button class="drawer-btn logout" onclick="logout()">⎋ Log Out</button>
+    </nav>
+  </aside>
+
+  <!-- ── TOPBAR ── -->
+  <div class="topbar">
+    <div class="logo-title">
+      <img src="logo.png" alt="PSU Logo">
+      <h2>Partido State University</h2>
+    </div>
+  </div>
+
+  <!-- ── YELLOW BAR ── -->
+  <div class="yellow-bar">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <div class="nav-buttons">
+      <button onclick="goAssessment()">Assessment</button>
+      <button onclick="printCOE()">Print</button>
+    </div>
+  </div>
+
+  <!-- ── COE CONTENT ── -->
+  <div id="coe">
+    <div class="paper">
+      <div class="header">
+        <img src="psu.png" class="logo left" alt="PSU Logo">
+        <div class="header-center">
+          <p>Republic of the Philippines</p>
+          <h2>Partido State University</h2>
+          <p>Goa, Camarines Sur</p>
+          <h3 class="title">CERTIFICATE OF ENROLLMENT</h3>
+          <p id="semesterAY">Loading academic period…</p>
+        </div>
+        <img src="swlogo.png" class="logo right" alt="SW Logo">
+      </div>
+
+      <div class="info">
+        <div class="left">
+          <p><b>Id No:</b>      <span id="student_id">—</span></p>
+          <p><b>Name:</b>       <span id="first_name">—</span></p>
+          <p><b>Course:</b>     <span id="course">—</span></p>
+          <p><b>Department:</b> <span id="department">—</span></p>
+        </div>
+        <div class="right">
+          <p><b>Date Enrolled:</b> <span id="enrollmentDate">—</span></p>
+          <p><b>Year Level:</b>    <span id="courseYear">—</span></p>
+        </div>
+      </div>
+
+      <table class="subjects">
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th style="width:12%">Subject Code</th>
+            <th>Subject Description</th>
+            <th style="width:8%">Units</th>
+            <th style="width:20%">Schedule</th>
+            <th style="width:14%">Instructor</th>
+            <th style="width:12%">Section</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleTable">
+          <tr><td colspan="7" style="text-align:center; color:#888;">Loading schedule…</td></tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="text-align:right; font-weight:bold;">Total Units</td>
+            <td id="totalUnits">0</td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <script src="coe.js"></script>
+  <script>
+    /* ── Drawer helpers ── */
+    function toggleMenu() {
+      document.getElementById('drawer').classList.toggle('open');
+      document.getElementById('drawerOverlay').classList.toggle('open');
+    }
+    function closeMenu() {
+      document.getElementById('drawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+    }
+    function go(url) { window.location.href = url; }
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    /* ── Populate drawer profile ── */
+    (function() {
+      const name     = localStorage.getItem('studentName') || '';
+      const id       = localStorage.getItem('studentId')   || '—';
+      const avatarEl = document.getElementById('drawerAvatar');
+      const nameEl   = document.getElementById('drawerName');
+      if (nameEl)   nameEl.textContent   = name || id;
+      if (avatarEl) avatarEl.textContent = name ? name.charAt(0).toUpperCase() : '?';
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+
+/* ── Role select ── */
+function selectRole(role) {
+  localStorage.setItem('selectedRole', role);
+  window.location.href = 'login.html';
+}
+
+/* ── Login ── */
+async function handleLogin(e) {
+  e.preventDefault();
+  const userId = document.getElementById('userId').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  try {
+    const response = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, password })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // SUCCESS: Save the database ID (pk) and redirect
+      localStorage.setItem('studentId', result.data.id); 
+      localStorage.setItem('userId', result.data.studentNumber);
+      localStorage.setItem('firstName', result.data.firstName);
+      window.location.href = 'dashboard.html';
+    } else {
+      alert("Error: " + result.message);
+    }
+  } catch (error) {
+    console.error("Connection failed:", error);
+    alert("Backend server is not responding.");
+  }
+}
+
+/* ── Dashboard ── */
+function show(name, btn) {
+  document.querySelectorAll('.sec').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('sec-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('hidden');
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = 'index.html';
+}
+
+/* ── On page load ── */
+document.addEventListener('DOMContentLoaded', function () {
+  const firstName = localStorage.getItem('firstName');
+  const role = localStorage.getItem('selectedRole') || 'Student';
+  const studentNumber = localStorage.getItem('userId'); // The Student Number used for login
+
+const greetingEl = document.getElementById('dynamicGreeting');
+  if (greetingEl) {
+    greetingEl.textContent = getGreeting();
+  }
+
+const welcomeText = document.getElementById('welcomeName');
+  if (welcomeText) {
+      welcomeText.textContent = firstName ? firstName : "Student";
+  }
+
+  // Update Badge
+  const badge = document.getElementById('roleBadge');
+  if (badge) badge.textContent = role;
+
+  // Update Profile Info in Dashboard
+  if (document.getElementById('profileId')) {
+    if (!studentNumber) { 
+        window.location.href = 'index.html'; 
+        return; 
+    }
+    
+    // Display the Student Number and Name
+    document.getElementById('profileId').textContent = studentNumber;
+    document.getElementById('profileRole').textContent = role;
+    
+    // Display initials in the avatar
+    const avatar = document.getElementById('avatar');
+    if (avatar && firstName) {
+        avatar.textContent = firstName.charAt(0).toUpperCase();
+    }
+  }
+});
+
+async function handleRegistration(e) {
+  e.preventDefault();
+  const messageDiv = document.getElementById('regMessage');
+  messageDiv.textContent = "Processing...";
+  messageDiv.style.color = "blue";
+
+  const studentData = {
+    firstName: document.getElementById('regFirstName').value.trim(),
+    lastName: document.getElementById('regLastName').value.trim(),
+    email: document.getElementById('regEmail').value.trim()
+  };
+
+  try {
+    // Step A: Create the Student
+    const studentResponse = await fetch('http://localhost:8080/api/students', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(studentData)
+    });
+
+    const studentResult = await studentResponse.json();
+
+    if (studentResponse.ok) {
+      const studentId = studentResult.id; // Get the generated ID from backend
+
+      // Step B: Create the Admission Application
+      const admissionResponse = await fetch(`http://localhost:8080/api/admissions/apply/${studentId}`, {
+        method: 'POST'
+      });
+
+      if (admissionResponse.ok) {
+        messageDiv.style.color = "green";
+        messageDiv.textContent = "Success! Your application is PENDING. Please check your email for updates.";
+        // Optional: Redirect to home after 3 seconds
+        setTimeout(() => { window.location.href = 'index.html'; }, 4000);
+      } else {
+        throw new Error("Failed to submit admission application.");
+      }
+    } else {
+      messageDiv.style.color = "red";
+      messageDiv.textContent = "Error: " + (studentResult.message || "Email might already be registered.");
+    }
+  } catch (error) {
+    messageDiv.style.color = "red";
+    messageDiv.textContent = "Connection Error: Is the backend running?";
+    console.error(error);
+  }
+}
+
+async function loadPendingAdmissions() {
+    const tableBody = document.getElementById('admissionTableBody');
+    tableBody.innerHTML = "<tr><td colspan='5'>Loading applications...</td></tr>";
+
+    try {
+        const response = await fetch('http://localhost:8080/api/admissions');
+        
+        // Add this check to see if the server is actually responding
+        if (!response.ok) throw new Error("Server returned an error");
+
+        const admissions = await response.json();
+        console.log("Data received from server:", admissions); // Check your browser console (F12)
+
+        tableBody.innerHTML = ""; 
+
+        if (admissions.length === 0) {
+            tableBody.innerHTML = "<tr><td colspan='5'>No applications found in the database.</td></tr>";
+            return;
+        }
+
+        admissions.forEach(adm => {
+            // SAFE ACCESS: Use DTO fields directly, not .student
+            const fName = adm.firstName || "N/A"; 
+            const lName = adm.lastName || "";
+            const email = adm.email || "No Email";
+            const status = adm.status || "PENDING";
+
+            const row = `
+                <tr>
+                    <td>${adm.id}</td>
+                    <td>${fName} ${lName}</td>
+                    <td>${email}</td>
+                    <td class="status-${status.toLowerCase()}">${status}</td>
+                    <td>
+                        ${status === 'PENDING' ? 
+                            `<button class="approve-btn" onclick="updateStatus(${adm.id}, 'APPROVED')">Approve</button>
+                             <button class="reject-btn" onclick="updateStatus(${adm.id}, 'REJECTED')">Reject</button>` : 
+                            '<span style="color:gray; font-style:italic">Processed</span>'}
+                    </td>
+                </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        tableBody.innerHTML = `<tr><td colspan='5' style='color:red;'>Error: ${error.message}. Check console for details.</td></tr>`;
+    }
+}
+
+async function updateStatus(admissionId, status) {
+    const action = status === 'APPROVED' ? "approve" : "reject";
+    if (!confirm(`Are you sure you want to ${action} this student?`)) return;
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/admissions/status/${admissionId}?status=${status}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (response.ok) {
+            alert(`Student ${status.toLowerCase()} successfully!`);
+            loadPendingAdmissions(); // Refresh the table
+        } else {
+            const err = await response.json();
+            alert("Error: " + err.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Connection failed.");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadPendingAdmissions);
+
+const password = document.getElementById("password");
+const toggle = document.getElementById("togglePassword");
+
+toggle.addEventListener("click", function () {
+  if (password.type === "password") {
+    password.type = "text";
+    toggle.textContent = "👁️‍🗨️";
+  } else {
+    password.type = "password";
+    toggle.textContent = "👁";
+  }
+});
+
+function showError(msg) {
+  document.getElementById("errorMessage").innerText = msg;
+  document.getElementById("errorPopup").style.display = "block";
+}
+
+function handleLogin(event) {
+  event.preventDefault();
+
+  let id = document.getElementById("userId").value.trim();
+  let pass = document.getElementById("password").value.trim();
+
+  if (id === "" && pass === "") {
+    showError("Please enter Student ID and Password!");
+    return;
+  }
+
+  if (id === "") {
+    showError("Student ID is required!");
+    return;
+  }
+
+  if (pass === "") {
+    showError("Password is required!");
+    return;
+  }
+
+  if (id !== "12345" || pass !== "admin123") {
+    showError("Invalid Student ID or Password!");
+    return;
+  }
+
+  alert("Login Successful!");
+  window.location.href = "dashboard.html";
+}
+
+
+function showError(msg) {
+  document.getElementById("errorMessage").innerText = msg;
+
+  // SHOW DARK BACKGROUND
+  document.getElementById("darkOverlay").style.display = "block";
+
+  // SHOW POPUP
+  document.getElementById("errorPopup").style.display = "block";
+}
+
+function closeError() {
+  // HIDE DARK BACKGROUND
+  document.getElementById("darkOverlay").style.display = "none";
+
+  // HIDE POPUP
+  document.getElementById("errorPopup").style.display = "none";
+}
+
+function showPopup(message, type = "error") {
+  document.getElementById("darkOverlay").style.display = "block";
+  document.getElementById("errorPopup").style.display = "block";
+  document.getElementById("errorMessage").innerText = message;
+
+  const title = document.getElementById("popupTitle");
+
+  if (type === "success") {
+    title.innerHTML = "✅ Success";
+    title.style.color = "green";
+  } else if (type === "confirm") {
+    title.innerHTML = "❓ Confirm Action";
+    title.style.color = "#ff9800";
+  } else {
+    title.innerHTML = "⚠ Error";
+    title.style.color = "red";
+  }
+}
+
+function closePopup() {
+  document.getElementById("darkOverlay").style.display = "none";
+  document.getElementById("errorPopup").style.display = "none";
+}
+
+
+function toggleAdminPanel(header) {
+    const card = header.parentElement;
+
+    // Optional: Close other cards if one is opened (Accordion style)
+    document.querySelectorAll('.collapsible-card').forEach(item => {
+        if (item !== card) item.classList.remove('active');
+    });
+
+    // Toggle current card
+    card.classList.toggle('active');
+}
+
+function closeAllPanels() {
+    document.querySelectorAll('.collapsible-card').forEach(card => card.classList.remove('active'));
+}
+
+function executeAdminAction(msg) {
+    alert(msg);
+    closeAllPanels();
+}
+
+function getGreeting() {
+  const hour = new Date().getHours(); // Returns 0-23
+
+  if (hour === 0) {
+    return "Still awake,";
+  } else if (hour >= 1 && hour <= 11) {
+    return "Good day,";
+  } else if (hour === 12) {
+    return "Good noon,";
+  } else if (hour >= 13 && hour <= 17) {
+    return "Good afternoon,";
+  } else {
+    // 18 to 23 (6:00pm to 11:59pm)
+    return "Good evening,";
+  }
+}

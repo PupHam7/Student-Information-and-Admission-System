@@ -1,0 +1,290 @@
+/* ─── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--black);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* ─── Design tokens ─────────────────────────────────────────── */
+:root {
+  --navy:     #0d47a1;
+  --blue:     #0d47a1;
+  --sky:      #1565c0;
+  --gold:     #ffcc00;
+  --cream:    #f8f9fa;
+  --white:    #ffffff;
+  --border:   #dee2e6;
+}
+
+/* ─── Header ────────────────────────────────────────────────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.header-top {
+  background: var(--white);
+  padding: .55rem clamp(1rem, 5vw, 4rem);
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  border-bottom: 1px solid var(--border);
+  justify-content: flex-start;
+  padding-left: 2.5rem;
+}
+.header-seal {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.header-seal img {
+  width: 79px; height: 79px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.header-university {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: .01em;
+}
+/* Container for the Gold Bar */
+.header-nav {
+  background: #ffcc00;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* This pushes nav-left and nav-buttons apart */
+  height: 44px;
+}
+
+/* Grouping hamburger and label */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Grouping the buttons on the right */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Button Styling to match the professional look */
+.nav-buttons button {
+  background: #0d47a1; /* Navy blue to match Scheduling theme */
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-buttons button:hover {
+  background: #0a3d8f;
+}
+
+/* Hamburger styling */
+.header-nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.header-nav-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #1a1a1a;
+  border-radius: 2px;
+}
+
+.header-nav-label {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  text-transform: uppercase;
+}
+
+/* =========================
+   NAV BUTTONS (TEXT ONLY FIX)
+========================= */
+.nav-buttons button {
+  all: unset;
+  font-family: inherit;
+
+  background: rgb(2, 2, 116);   /* green like Enroll */
+  color: white;
+
+  padding: 6px 15px;
+  border-radius: 5px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* hover effect */
+.nav-buttons button:hover {
+  background: rgb(4, 4, 214);   /* darker green */
+  text-decoration: none;
+}
+
+/* remove focus box */
+.nav-buttons button:focus,
+.nav-buttons button:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* =========================
+   PAPER (COE CONTAINER)
+========================= */
+.paper {
+  width: 90%;
+  max-width: 850px;
+  margin: 20px auto;
+  border: 1px solid black;
+  padding: 20px 25px;
+}
+
+/* =========================
+   HEADER INSIDE COE
+========================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+}
+
+.header-center {
+  text-align: center;
+  line-height: 1.0;/**/
+}
+
+.header-center h2 {
+  margin: 2px 0;
+  font-size: 20px;
+}
+
+.title {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* =========================
+   INFO SECTION
+========================= */
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 15px;
+}
+
+.info .left,
+.info .right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info .right {
+  margin-right: 20px;
+}
+
+.info p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.info b {
+  display: inline-block;
+  width: 110px;
+}
+
+/* =========================
+   TABLE
+========================= */
+.subjects {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.subjects th,
+.subjects td {
+  border: 1px solid black;
+  padding: 4px 6px;
+}
+
+.subjects th {
+  text-align: center;
+  font-weight: bold;
+}
+
+@media print {
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #coe, #coe * {
+    visibility: visible;
+  }
+
+  #coe {
+    position: relative;
+    width: 100%;
+    max-width: 190mm;
+    margin: auto;
+    padding: 10px;
+    box-sizing: border-box;
+
+    font-size: 12px;   /* bigger text */
+  }
+
+  .subjects td,
+  .subjects th {
+    padding: 6px 8px;  /* bigger table spacing */
+  }
+
+  .yellow-bar,
+  .topbar,
+  .nav-buttons {
+    display: none !important;
+  }
+}

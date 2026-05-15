@@ -1,0 +1,243 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Times New Roman", serif;
+  margin: 0;
+  background: #fff;
+  padding-top: 140px; /* space for fixed header */
+}
+
+/* =========================
+   TOP BAR (FIXED)
+========================= */
+.topbar {
+  background: #e6e6e6;
+  padding: 10px 20px;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-title img {
+  width: 60px;
+}
+
+/* =========================
+   YELLOW BAR (NAV BAR)
+========================= */
+.yellow-bar {
+  background: #f4c400;
+
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  z-index: 1999;
+
+  display: flex;
+  align-items: center;       /* vertical center fix */
+  justify-content: space-between;
+
+  padding: 15px 20px;        /* slightly bigger padding fixes “too high” look */
+}
+
+/* menu button (left) */
+.menu-btn {
+  background: none;
+  color: black;
+
+  padding: 0;
+  border: none;
+
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* right side nav buttons */
+.nav-buttons {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  margin-top: 2px;  /* 👈 fixes “slightly up” issue */
+}
+
+/* =========================
+   NAV BUTTONS (TEXT ONLY FIX)
+========================= */
+.nav-buttons button {
+  all: unset;
+  font-family: inherit;
+
+  background: rgb(2, 2, 116);   /* green like Enroll */
+  color: white;
+
+  padding: 6px 15px;
+  border-radius: 5px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* hover effect */
+.nav-buttons button:hover {
+  background: rgb(4, 4, 214);   /* darker green */
+  text-decoration: none;
+}
+
+/* remove focus box */
+.nav-buttons button:focus,
+.nav-buttons button:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* =========================
+   PAPER (COE CONTAINER)
+========================= */
+.paper {
+  width: 90%;
+  max-width: 850px;
+  margin: 20px auto;
+  border: 1px solid black;
+  padding: 20px 25px;
+}
+
+/* =========================
+   HEADER INSIDE COE
+========================= */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+}
+
+.header-center {
+  text-align: center;
+  line-height: 1.0;/**/
+}
+
+.header-center h2 {
+  margin: 2px 0;
+  font-size: 20px;
+}
+
+.title {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* =========================
+   INFO SECTION
+========================= */
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 15px;
+}
+
+.info .left,
+.info .right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info .right {
+  margin-right: 20px;
+}
+
+.info p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.info b {
+  display: inline-block;
+  width: 110px;
+}
+
+/* =========================
+   TABLE
+========================= */
+.subjects {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.subjects th,
+.subjects td {
+  border: 1px solid black;
+  padding: 4px 6px;
+}
+
+.subjects th {
+  text-align: center;
+  font-weight: bold;
+}
+
+@media print {
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #coe, #coe * {
+    visibility: visible;
+  }
+
+  #coe {
+    position: relative;
+    width: 100%;
+    max-width: 190mm;
+    margin: auto;
+    padding: 10px;
+    box-sizing: border-box;
+
+    font-size: 12px;   /* bigger text */
+  }
+
+  .subjects td,
+  .subjects th {
+    padding: 6px 8px;  /* bigger table spacing */
+  }
+
+  .yellow-bar,
+  .topbar,
+  .nav-buttons {
+    display: none !important;
+  }
+}

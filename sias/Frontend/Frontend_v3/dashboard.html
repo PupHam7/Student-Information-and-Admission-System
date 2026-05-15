@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ParSU SIAS Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body class="page-bg">
+  <header class="header">
+    <img
+      src="PSU_logo.png"
+      class="seal small"
+    />
+    <span class="uni-name">Partido State University</span>
+  </header>
+
+  <div class="gold-bar">
+    <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+  </div>
+
+  <div class="body">
+    <aside class="sidebar" id="sidebar">
+      <div class="profile">
+        <div class="avatar" id="avatar">?</div>
+        <div class="pid"   id="profileId">—</div>
+        <div class="prole" id="profileRole">—</div>
+      </div>
+      <nav>
+        <button class="nav-item" onclick="window.location.href='assessment.html'">Assessment</button>
+        <button class="nav-item" onclick="window.location.href='coe.html'">View COE</button>
+        <button class="nav-item" onclick="window.location.href='Scheduling.html'">My Schedule</button>
+        <button class="nav-item" onclick="show('help',       this)">Help</button>
+        <button class="nav-item" onclick="show('support',    this)">Support</button>
+        <button class="nav-item" onclick="show('about',      this)">About</button>
+        <button class="nav-item logout" onclick="logout()">Log Out</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div id="sec-home" class="sec active welcome-container">
+    <div class="welcome-card">
+      <h2>
+        <span id="dynamicGreeting">Good day</span>, 
+        <span id="welcomeName">STUDENT</span>
+      </h2>
+      <p>Welcome back to your dashboard! </p>
+      <p>Please select a menu item from the sidebar to manage your enrollment.</p>
+    </div>
+  </div>
+      
+      <div id="sec-assessment"  class="sec"></div>
+      <div id="sec-coe" class="sec"></div>
+      <div id="sec-scheduling" class="sec"></div>
+      <div id="sec-help"       class="sec"></div>
+      <div id="sec-support"    class="sec"></div>
+      <div id="sec-about"      class="sec"></div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
