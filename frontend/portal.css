@@ -1,0 +1,199 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: #f1f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+}
+
+.status-portal-container {
+    width: 100%;
+    max-width: 580px;
+}
+
+.status-portal-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    padding: 32px;
+    position: relative;
+    border: 1px solid #e2e8f0;
+}
+
+.portal-back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #64748b;
+    background: #f8fafc;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.portal-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.portal-header h1 {
+    font-size: 22px;
+    color: #0d47a1;
+    letter-spacing: 1px;
+}
+
+.portal-header p {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* CARDS STRUCTURE */
+.status-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.card-header {
+    background: #f8fafc;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.card-header h4 { font-size: 14px; color: #1e293b; margin: 0; }
+.card-header svg { width: 16px; color: #0d47a1; }
+
+.card-content { padding: 16px; }
+
+.highlight-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.meta-label {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* RESULT CERTIFICATE SECTION */
+.result-cert { border-top: 4px solid #0d47a1; }
+.cert-body { padding: 16px; }
+
+.choice-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+}
+
+.tag {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.passed { background: #dcfce7; color: #15803d; }
+.failed { background: #fee2e2; color: #b91c1c; }
+
+.download-btn {
+    width: 100%;
+    margin-top: 12px;
+    background: #1e293b;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* ENROLLMENT SECTION */
+.enrollment-card { border-top: 4px solid #c9a227; }
+.enroll-prompt { font-size: 13px; color: #475569; margin-bottom: 12px; }
+
+.action-btn {
+    background: #c9a227;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.cred-output {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 16px;
+    border-radius: 10px;
+}
+
+/* FORM INPUTS */
+.input-group { margin-bottom: 16px; }
+.input-group label { display: block; font-size: 13px; margin-bottom: 6px; color: #475569; }
+.input-wrap { position: relative; }
+.input-wrap input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.input-wrap.no-icon input { padding-left: 12px; }
+.input-icon { position: absolute; left: 12px; top: 12px; width: 18px; color: #94a3b8; }
+.caps { text-transform: uppercase; }
+
+.portal-submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: #0d47a1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.portal-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.back-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+}

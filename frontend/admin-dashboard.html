@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ParSU SIAS - Admin Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table { width: 90%; margin: 20px auto; border-collapse: collapse; background: white; }
+    th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #003366; color: white; }
+    .status-pending  { color: orange; font-weight: bold; }
+    .status-approved { color: green;  font-weight: bold; }
+    .processed-label { color: #888; font-style: italic; }
+    .approve-btn {
+      background: green; color: white; border: none;
+      padding: 5px 10px; cursor: pointer; border-radius: 3px;
+    }
+    .reject-btn {
+      background: #d9534f; color: white; border: none;
+      padding: 5px 10px; cursor: pointer; border-radius: 3px; margin-left: 5px;
+    }
+    .reject-btn:hover  { background: #c9302c; }
+    .approve-btn:hover { background: #218838; }
+  </style>
+</head>
+
+<body class="page-bg">
+
+  <!-- ── DARK OVERLAY (one, inside body) ── -->
+  <div id="darkOverlay" style="
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.65); z-index:99998;">
+  </div>
+
+  <!-- ── POPUP MODAL (one, inside body) ── -->
+  <div id="errorPopup" style="
+    display:none; position:fixed; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    background:#fff; border-left:6px solid red;
+    padding:28px 24px; width:320px; text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,0.22);
+    border-radius:10px; z-index:99999;
+    transition: border-color 0.25s;">
+    <h3 id="popupTitle" style="margin:0 0 10px; font-size:18px;">⚠ Error</h3>
+    <p  id="errorMessage" style="color:#444; font-size:14px; line-height:1.6;">Message</p>
+    <button onclick="closePopup()" style="
+      margin-top:16px; padding:8px 24px;
+      background:red; color:white; border:none;
+      border-radius:6px; cursor:pointer; font-size:14px;
+      transition: background 0.2s;" id="popupOkBtn">
+      OK
+    </button>
+  </div>
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <img src="PSU_logo.png" class="seal small" />
+    <span class="uni-name">Partido State University</span>
+  </header>
+
+  <div class="gold-bar">
+    <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+  </div>
+
+  <div class="body">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="profile">
+        <div class="avatar">A</div>
+        <div class="pid">Administrator</div>
+        <div class="prole">System Office</div>
+      </div>
+      <nav>
+        <button class="nav-item active" onclick="loadPendingAdmissions()">Admissions</button>
+        <button class="nav-item" onclick="alert('Manage Students — coming soon')">Students</button>
+        <button class="nav-item" onclick="alert('Manage Instructors — coming soon')">Instructors</button>
+        <button class="nav-item logout" onclick="window.location.href='index.html'">Log Out</button>
+      </nav>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="main">
+      <div style="text-align:center; padding:24px 20px 10px;">
+        <h2 style="color:#003366; margin-bottom:12px;">Admissions Management</h2>
+        <button onclick="loadPendingAdmissions()" class="btn blue"
+          style="width:auto; padding:10px 28px; border-radius:6px;">
+          ↻ Refresh List
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Admission ID</th>
+            <th>Student Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="admissionTableBody">
+          <tr><td colspan="5" style="text-align:center;color:#888;">Loading…</td></tr>
+        </tbody>
+      </table>
+    </main>
+
+  </div><!-- /.body -->
+
+  <script src="script.js"></script>
+</body>
+</html>

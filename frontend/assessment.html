@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment – ParSU SIAS</title>
+  <!-- Shared design tokens (--blue, --gold, sidebar, header, gold-bar, nav-item, etc.) -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Assessment-specific: table, filters, modal, enroll-btn, etc. -->
+  <link rel="stylesheet" href="assessment.css">
+  <style>
+    /* ── Make the page fill the viewport like dashboard ── */
+    html, body { height: 100%; margin: 0; }
+    body { background: #d9d9d9; } /* matches .page-bg */
+
+    /* ── Scrollable main area ── */
+    .main { overflow-y: auto; }
+
+    /* ── Container card ── */
+    .container {
+      width: 92%;
+      margin: 24px auto;
+      background: #fff;
+      padding: 20px 24px;
+      border-radius: 8px;
+      overflow-x: auto;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* ── Filters row ── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .left-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      flex: 1;
+    }
+    .left-info span { font-weight: bold; min-width: 200px; font-size: 13px; }
+    .left-info span b { font-weight: normal; }
+
+    /* ── Enroll / COE buttons ── */
+    .enroll-btn, .view-coe-btn {
+      padding: 7px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .enroll-btn    { background: #1dc331; }
+    .enroll-btn:hover { opacity: 0.85; }
+    .view-coe-btn  { background: #2a60c4; }
+    .view-coe-btn:hover { background: #1e4a9a; }
+
+    /* ── Enroll message ── */
+    .enroll-message {
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      margin: 8px 0 4px;
+    }
+
+    /* ── Subject header row ── */
+    .subject-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px 0 8px;
+    }
+    .subtitle { margin: 0; font-weight: bold; font-size: 14px; }
+    .period-box { display: flex; align-items: center; gap: 10px; }
+    .period-box select {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 9px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background: #f4f6fa;
+      border-bottom: 2px solid #ccc;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #444;
+    }
+
+    /* ── Enroll confirmation modal ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9000;
+    }
+    .hidden { display: none !important; }
+    .modal {
+      background: #fff;
+      padding: 32px 40px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    .modal-text { font-size: 16px; margin-bottom: 20px; }
+    .modal-buttons { display: flex; justify-content: center; gap: 16px; }
+    .cancel-btn {
+      background: #d22c2c; color: #fff;
+      border: none; padding: 9px 28px;
+      border-radius: 6px; cursor: pointer; font-size: 14px;
+    }
+    .proceed-btn {
+      background: #1dc331; color: #fff;
+      border: none; padding: 9px 28px;
+      border-radius: 6px; cursor: pointer; font-size: 14px;
+    }
+  </style>
+</head>
+
+<body class="page-bg">
+
+  <!-- ══════════════════════════════════════
+       TOP HEADER  (matches dashboard.html)
+  ══════════════════════════════════════ -->
+  <header class="header">
+    <img src="PSU_logo.png" class="seal small" alt="PSU Seal">
+    <span class="uni-name">Partido State University</span>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       GOLD BAR  (matches dashboard.html)
+  ══════════════════════════════════════ -->
+  <div class="gold-bar">
+    <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       BODY: sidebar + main
+  ══════════════════════════════════════ -->
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="profile">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div class="pid"    id="sidebarId">—</div>
+        <div class="prole">Student</div>
+      </div>
+      <nav>
+        <button class="nav-item"        onclick="location.href='dashboard.html'">Dashboard</button>
+        <button class="nav-item active">Assessment</button>
+        <button class="nav-item"        onclick="location.href='coe.html'">View COE</button>
+        <button class="nav-item"        onclick="location.href='Scheduling.html'">My Schedule</button>
+        <button class="nav-item logout" onclick="doLogout()">Log Out</button>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <div id="loadingIndicator"
+           style="display:none; text-align:center; padding:30px; color:#888; font-size:15px;">
+        Loading your information…
+      </div>
+
+      <div class="container">
+
+        <!-- Student info + action button -->
+        <div class="filters">
+          <div class="left-info">
+            <span>Name: <b id="First_name">—</b></span>
+            <span>Course &amp; Year: <b id="courseYear">—</b></span>
+            <span>Dept: <b id="department">—</b></span>
+            <span>Sex: <b id="sex">—</b></span>
+            <span>Validated: <b id="validated">—</b></span>
+          </div>
+          <button id="actionBtn" class="enroll-btn">Enroll</button>
+        </div>
+
+        <p id="enrollMessage" class="enroll-message"></p>
+
+        <!-- Subject table header -->
+        <div class="subject-header">
+          <p class="subtitle">Enrolled Subjects:</p>
+          <div class="period-box">
+            <label>Period:</label>
+            <select id="period"><option>Loading…</option></select>
+          </div>
+        </div>
+
+        <!-- Schedule table -->
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Subject</th>
+              <th>Description</th>
+              <th style="text-align:center">Units</th>
+              <th>Schedule</th>
+              <th>Instructor</th>
+              <th>Section</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTable">
+            <tr>
+              <td colspan="7" style="text-align:center; color:#aaa; padding:20px;">
+                Loading schedule…
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:right; font-weight:bold; font-size:13px;">
+                Total Units:
+              </td>
+              <td style="font-weight:bold; text-align:center;">
+                <span id="totalUnits">0</span>
+              </td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+      </div><!-- /.container -->
+    </main><!-- /.main -->
+
+  </div><!-- /.body -->
+
+  <!-- ENROLL CONFIRMATION MODAL -->
+  <div id="modalOverlay" class="overlay hidden">
+    <div class="modal">
+      <p class="modal-text">
+        <b>Are you sure you want to Enroll?</b><br>Click "Proceed" if yes.
+      </p>
+      <div class="modal-buttons">
+        <button class="cancel-btn"  onclick="goBack()">Cancel</button>
+        <button class="proceed-btn" onclick="confirmEnroll()">Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assessment.js"></script>
+  <script>
+    /* ── Sidebar toggle (reuses style.css .sidebar.hidden) ── */
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    /* ── Logout ── */
+    function doLogout() {
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    /* ── Populate sidebar profile from localStorage ── */
+    (function () {
+      const name = localStorage.getItem('studentName') || '';
+      const id   = localStorage.getItem('studentId')   || '—';
+      document.getElementById('sidebarId').textContent     = id;
+      document.getElementById('sidebarAvatar').textContent =
+        name ? name.charAt(0).toUpperCase() : '?';
+    })();
+  </script>
+
+</body>
+</html>
