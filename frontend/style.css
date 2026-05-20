@@ -216,6 +216,7 @@ form {
   justify-content: center;
   border: 4px solid #ffffff;
   margin-bottom: 8px;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 .pid {
@@ -304,6 +305,8 @@ form {
   align-items: center;
   justify-content: center;
   background-color: #ffffff; /* Main content background */
+  animation: fadeUp .45s ease both;
+  -webkit-animation: fadeUp .45s ease both;
 }
 
 .welcome-card {
